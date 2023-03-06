@@ -1,0 +1,88 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 32
+    buildToolsVersion "30.0.3"
+    ndkVersion '21.3.6528147'
+    defaultConfig {
+        applicationId "com.example.uhf_bt"
+        minSdkVersion 18
+        targetSdkVersion 32
+        versionCode 4
+        versionName "1.5.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        multiDexEnabled true
+
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    // Temporary fix until alpha10
+    //More than one file was found with OS independent path
+    // 'META-INF/com.android.tools/proguard/coroutines.pro'
+    packagingOptions {
+        pickFirst  '**'
+    }
+
+    signingConfigs {
+        debug {
+            File strFile = new File("/uhf-ble_release.jks")
+            storeFile file(strFile)
+            storePassword "123456"
+            keyPassword "123456"
+            keyAlias "key0"
+        }
+        release {
+            File strFile = new File("/uhf-ble_release.jks")
+            storeFile file(strFile)
+            storePassword "123456"
+            keyPassword "123456"
+            keyAlias "key0"
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+        // 自定义apk名称
+        android.applicationVariants.all { variant ->
+            variant.outputs.all {
+                outputFileName = "UHF-ble_v${defaultConfig.versionName}.apk"
+            }
+        }
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
+        // Or, if you prefer, you can continue to check for errors  in release builds,
+        // but continue the build even when errors are found:
+        abortOnError false
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.*'], dir: 'libs')
+    implementation 'com.android.support:multidex:1.0.3'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.appcompat:appcompat:1.7.0-alpha01'
+    implementation 'androidx.cardview:cardview:1.0.0'
+    // 蓝牙固件升级
+    implementation('no.nordicsemi.android:dfu:1.9.0') {
+        exclude group: 'com.android.support'
+    }
+    implementation 'com.google.android.material:material:1.4.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+
+    //implementation 'no.nordicsemi.android:dfu:2.3.0'
+
+}
